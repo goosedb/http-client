@@ -56,7 +56,7 @@ parseStatusHeaders conn timeout' cont
         -- Ensure that there is some data coming in. If not, we want to signal
         -- this as a connection problem and not a protocol problem.
         bs <- connectionRead conn
-        when (S.null bs) $ throwHttp NoResponseDataReceived
+        -- when (S.null bs) $ throwHttp NoResponseDataReceived
         connectionReadLineWith conn bs >>= parseStatus 3
 
     parseStatus :: Int -> S.ByteString -> IO (Status, HttpVersion)
