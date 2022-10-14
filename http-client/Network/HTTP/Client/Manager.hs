@@ -236,11 +236,13 @@ mkCreateConnection ms = do
     tlsProxyConnection <- managerTlsProxyConnection ms
 
     return $ \ck -> wrapConnectExc $ case ck of
-        CKRaw connaddr connhost connport ->
+        CKRaw connaddr connhost connport -> do
+            putStrLn "CKRaw"
             rawConnection connaddr (S8.unpack connhost) connport
-        CKSecure connaddr connhost connport ->
+        CKSecure connaddr connhost connport -> do
+            putStrLn "CKSecure"
             tlsConnection connaddr (S8.unpack connhost) connport
-        CKProxy connhost connport mProxyAuthHeader ultHost ultPort ->
+        CKProxy connhost connport mProxyAuthHeader ultHost ultPort -> do
             let proxyAuthorizationHeader = maybe
                     ""
                     (\h' -> S8.concat ["Proxy-Authorization: ", h', "\r\n"])
@@ -260,7 +262,9 @@ mkCreateConnection ms = do
                     StatusHeaders status _ _ <- parseStatusHeaders conn Nothing Nothing
                     unless (status == status200) $
                         throwHttp $ ProxyConnectException ultHost ultPort status
-                in tlsProxyConnection
+                in do
+                    putStrLn $ "CKProxy " <> show proxyAuthorizationHeader <> " " <> show hostHeader
+                    tlsProxyConnection
                         connstr
                         parse
                         (S8.unpack ultHost)
