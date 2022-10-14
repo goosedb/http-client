@@ -259,7 +259,8 @@ mkCreateConnection ms = do
                     , "\r\n"
                     ]
                 parse conn = do
-                    StatusHeaders status _ _ <- parseStatusHeaders conn Nothing Nothing
+                    s@(StatusHeaders status _ _) <- parseStatusHeaders conn Nothing Nothing
+                    putStrLn $ "Status:" <> show s
                     unless (status == status200) $ do
                         print $ ProxyConnectException ultHost ultPort status
                         throwHttp $ ProxyConnectException ultHost ultPort status
