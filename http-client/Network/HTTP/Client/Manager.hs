@@ -260,7 +260,8 @@ mkCreateConnection ms = do
                     ]
                 parse conn = do
                     StatusHeaders status _ _ <- parseStatusHeaders conn Nothing Nothing
-                    unless (status == status200) $
+                    unless (status == status200) $ do
+                        print $ ProxyConnectException ultHost ultPort status
                         throwHttp $ ProxyConnectException ultHost ultPort status
                 in do
                     putStrLn $ "CKProxy " <> show proxyAuthorizationHeader <> " " <> show hostHeader
